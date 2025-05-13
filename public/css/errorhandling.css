@@ -1,0 +1,16 @@
+/* Slide-in animation */
+@keyframes slideIn {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Apply animation to the flash messages */
+.slide-in {
+    animation: slideIn 0.5s ease-out;
+}

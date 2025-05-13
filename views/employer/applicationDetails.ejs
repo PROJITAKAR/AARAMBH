@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Top Navbar Section -->
+    <nav class="w-full bg-indigo-700 text-white p-3 px-16 border-b-2" aria-label="Main navigation">
+        <div class="flex flex-wrap items-center justify-between">
+            <a href="/" class="pl-5 text-2xl font-semibold" aria-label="Go to homepage">Aarambh</a>
+            
+            <div class="flex flex-row justify-center items-center space-x-6">
+                <div>
+                    <a href="/notifications" class="text-white hover:text-indigo-800" aria-label="Notifications">
+                        <i class="fas fa-bell text-white hover:text-gray-200 text-2xl" aria-hidden="true"></i>
+                    </a>
+                </div>
+                <div class="relative">
+                    <button 
+                        id="dropdownButton" 
+                        class="w-30 h-12 border-4 border-indigo-100 hover:border-indigo-200 rounded-3xl flex items-center space-x-2 bg-indigo-100 pr-4 py-2 hover:bg-indigo-200 focus:outline-none"
+                        aria-haspopup="true" 
+                        aria-expanded="false" 
+                        onclick="toggleDropdown(event)"
+                        aria-label="User Profile Dropdown">
+                        <img src="/images/image.png" alt='Default Profile Photo' class="w-11 h-11 rounded-full border-2 border-indigo-800 object-cover mr-4" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="#6366f1" class="w-5 h-5" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Navbar Links -->
+                    <ul id="dropdownMenu" 
+                        class="hidden absolute right-0 mt-2 w-48 bg-white text-indigo-800 rounded-md shadow-lg z-10" 
+                        role="menu" aria-labelledby="dropdownButton">
+                        <h1 class="block px-4 py-2 text-xl font-semibold overflow-x-hidden" id="user-name"><%= employer.companyName %></h1>
+                        <p class="block px-4 pb-2 text-indigo-600 break-words" id="user-email"><%= employer.email %></p>
+                        <li role="none"><a href="/employers/dashboard" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Profile"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li role="none"><a href="/employers/profile" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Profile"><i class="fas fa-user"></i> Profile</a></li>
+                        <li role="none"><a href="/jobs/employer/show-jobs" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Jobs"><i class="fas fa-briefcase"></i>Manage Jobs</a></li>
+                        <li role="none"><a href="/employers/notifications" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Notifications"><i class="fas fa-bell"></i> Notifications</a></li>
+                        <li role="none"><a href="/settings" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Settings"><i class="fas fa-cogs"></i> Settings</a></li>
+                        <li role="none"><a href="/auths/logout" class="block px-4 py-2 text-red-500 hover:text-red-600" role="menuitem" aria-label="Logout"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto py-10 px-4">
+        <a href="javascript:window.history.back();" 
+        class="ml-10 px-4 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 hover:shadow-lg transition duration-200">
+        Back
+     </a>
+             <h1 class="text-3xl font-semibold text-center text-gray-800 mb-8">Application Details</h1>
+
+        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 max-w-3xl mx-auto">
+
+            <!-- Flash Messages Section -->
+            <% if (error && error.length > 0) { %>
+                <div class="bg-red-500 text-white p-4 rounded-lg mb-4">
+                    <ul>
+                        <% error.forEach(function(message) { %>
+                            <li><%= message %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+            <% } %>
+
+            <% if (success && success.length > 0) { %>
+                <div class="bg-green-500 text-white p-4 rounded-lg mb-4">
+                    <ul>
+                        <% success.forEach(function(message) { %>
+                            <li><%= message %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+            <% } %>
+
+            <!-- Job & Applicant Details -->
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Job Title: <%= application.job.title %></h2>
+            <% if (application.applicant.profilePhoto) { %>
+                <div class="mb-4">
+                    <img src="data:profilePhoto/png;base64,<%= application.applicant.profilePhoto.toString('base64') %>" alt="/images/default.png" class="w-20 h-20 rounded-full border-4 border-indigo-500 shadow-lg object-cover">
+                </div>
+            <% }  %>
+            <p class="text-sm text-gray-600 mb-4">Applicant Name: <%= application.applicant.name %></p>
+            <p class="text-sm text-gray-600 mb-4">Email: <%= application.applicant.email %></p>
+            <p class="text-sm text-gray-600 mb-4">Applied On: <%= application.createdAt.toDateString() %></p>
+
+            <% if (application.additionalInformation) { %>
+                <div class="mb-4">
+                    <h3 class="font-medium text-lg text-gray-800 mb-2">Additional Information:</h3>
+                    <p class="text-sm text-gray-600"><%= application.additionalInformation %></p>
+                </div>
+            <% } %>
+
+            <% if (application.resume) { %>
+                <div class="mb-4">
+                    <h3 class="font-medium text-lg text-gray-800 mb-2">Resume:</h3>
+                    <iframe src="data:application/pdf;base64,<%= application.resume.toString('base64') %>" width="100%" height="600px"></iframe>
+                    <a href="data:application/pdf;base64,<%= application.resume.toString('base64') %>" download="resume.pdf" class="text-indigo-500 hover:underline">Download Resume</a>
+                    
+                </div>
+            <% } else { %>
+                <p class="text-gray-500 text-center italic">No resume uploaded</p>
+            <% } %>
+
+            <!-- Status Update Section -->
+            <% if (application.status === 'pending') { %>
+                <!-- Only Review button for Pending Status -->
+                <form action="/applications/employer/update-application" method="POST" class="mt-6">
+                    <input type="hidden" name="applicationId" value="<%= application._id %>">
+                    <div class="mt-4">
+                        <label for="feedback" class="block text-sm font-medium text-gray-700">Feedback (optional only for internal purpose):</label>
+                        <textarea id="feedback" name="feedback" rows="4" class="w-full border border-gray-300 rounded-lg p-2 mt-2"></textarea>
+                    </div>
+                    <button type="submit" name="status" value="reviewed" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700" >Application Reviewed</button>
+                </form>
+
+                <!-- Optional Feedback for Pending Status -->
+                
+            <% } else if (application.status === 'reviewed') { %>
+                <!-- Options for Reviewed Status: Accept or Reject -->
+                <form action="/applications/employer/update-application" method="POST" class="mt-6">
+                    <h3 class="font-medium text-lg text-gray-800 mb-4">Update Status and Provide Feedback</h3>
+                    <input type="hidden" name="applicationId" value="<%= application._id %>">
+
+
+                    <!-- Compulsory Feedback for Reviewed Status -->
+                    <div class="mt-4">
+                        <label for="feedback" class="block text-sm font-medium text-gray-700">Feedback (required):</label>
+                        <textarea id="feedback" name="feedback" rows="4" class="w-full border border-gray-300 rounded-lg p-2 mt-2" required></textarea>
+                    </div>
+
+                    <!-- Accept or Reject buttons -->
+                    <div class="mt-4">
+                        <label for="status" class="block text-sm font-medium text-gray-700">Update Status</label>
+                        <select name="status" id="status" class="w-full border border-gray-300 rounded-lg p-2 mt-2">
+                            <option value="" disabled selected>Choose an option</option>
+                            <option value="accepted" class="text-green-600">Accept</option>
+                            <option value="rejected" class="text-red-600">Reject</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 mt-4">Update Application</button>
+                </form>
+            <% } else if (application.status === 'accepted' || application.status === 'rejected') { %>
+                <!-- Display Status and Feedback if already Accepted or Rejected -->
+                <div class="mt-6">
+                    <h3 class="font-medium text-lg mb-4 
+                    <% if (application.status === 'accepted') { %> text-green-600 <% } %>
+                    <% if (application.status === 'rejected') { %> text-red-600 <% } %>
+                ">
+                    Status: <%= application.status === 'accepted' ? 'Accepted' : 'Rejected' %>
+                </h3>
+                                <div>
+                        <h4 class="font-medium text-gray-800">Feedback:</h4>
+                        <p class="text-sm text-gray-600"><%= application.feedback %></p>
+                    </div>
+                </div>
+            <% } %>
+
+        </div>
+    </div>
+    <script src="/js/toggleDropdown.js"></script>
+
+</body>
+</html>

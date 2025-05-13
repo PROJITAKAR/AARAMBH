@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-indigo-100">
+
+  <div class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-indigo-800 text-white p-4">
+      <div class="container mx-auto flex justify-between items-center px-4">
+        <a href="/" class="text-2xl font-semibold">Aarambh</a>
+        <ul class="flex space-x-6 text-sm sm:text-base">
+          <li><a href="/users/dashboard" class="text-gray-300 hover:text-white"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+          <li><a href="/searchs/search-bar" class="text-gray-300 hover:text-white"><i class="fas fa-briefcase"></i> Jobs</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-6 py-10 flex-grow">
+      <h1 class="text-4xl font-semibold text-center text-gray-900 mb-10">Your Notifications</h1>
+
+      <% if (user.notifications.reverse().length > 0) { %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <% user.notifications.forEach(notification => { %>
+            <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105 break-words">
+              <!-- Notification Title -->
+              <h2 class="text-xl font-semibold text-indigo-700 mb-2">
+                <i class="fas fa-bell mr-2"></i><%= notification.title %>
+              </h2>
+
+              <!-- Message -->
+              <p class="text-gray-700 mb-4 mt-5"><%- notification.message %></p>
+
+              <!-- Related Job (if any) -->
+              <% if (notification.type === 'Job Alert') { %>
+                <!-- Job Alert with Apply Now Button -->
+                <p class="text-gray-600 text-sm"><strong class="text-md">Job:</strong> <b><%= notification.job.title %></b> at <b><%= notification.job.location %></b></p>
+                <a href="/applications/apply-job?jobId=<%= notification.job._id %>" class="inline-block mt-3 text-indigo-600 hover:underline text-md mt-5"><i class="fas fa-paper-plane mr-1"></i>Apply Now</a>
+              <% } else { %>
+                <!-- Other Notifications (Already Applied) -->
+                <p class="text-gray-600 text-sm"><strong class="text-md">Job:</strong> <b><%= notification.job.title %></b> at <b><%= notification.job.location %></b></p>
+                <p class="text-gray-600 text-sm mt-3"><strong>Status:</strong> <%= notification.type %></p>
+              <% } %>
+
+              <!-- Timestamp -->
+              <p class="text-gray-400 text-xs mt-6"><%= new Date(notification.createdAt).toLocaleString() %></p>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <p class="text-center text-gray-600 text-lg">You have no new notifications at the moment.</p>
+      <% } %>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-indigo-800 text-white text-center py-4">
+      <p>&copy; 2025 Job Seekers Platform | All Rights Reserved</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>

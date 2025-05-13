@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= employer.companyName %> - Profile
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <style>
+
+        /* Button styling */
+        .button {
+            background-color: #4c6ef5;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-transform: uppercase;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .button:hover {
+            background-color: #3b55d6;
+            transform: scale(1.05);
+        }
+
+
+
+    </style>
+</head>
+
+<body class="w-full h-full bg-gray-50">
+    <div class="w-full h-full  flex flex-col" role="main">
+
+
+        <nav class="w-full text-white p-3 px-16 border-b-2" style="background-color:#4338ca;"
+            aria-label="Main navigation">
+            <div class="flex flex-wrap items-center justify-between">
+                <a href="/" class="pl-5 text-2xl font-semibold" aria-label="Go to homepage">Aarambh</a>
+                <div class="flex flex-row justify-center items-center space-x-6">
+                    <div>
+                        <a href="/notifications" class="text-white hover:text-indigo-800" aria-label="Notifications">
+                            <i class="fas fa-bell text-white hover:text-gray-200 text-2xl" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                    <div class="relative">
+                        <button id="dropdownButton"
+                            class="w-30 h-12 border-4 border-indigo-100 hover:border-indigo-200 rounded-3xl flex items-center space-x-2 bg-indigo-100 pr-4 py-2 hover:bg-indigo-200 focus:outline-none"
+                            aria-haspopup="true" aria-expanded="false" onclick="toggleDropdown(event)"
+                            aria-label="User  Profile Dropdown">
+                            <img src="<%= user.profilePhoto? 'data:profilePhoto/png;base64,'+user.profilePhoto.toString('base64') : '/images/default.png'%>"
+                                alt="<%= user.profilePhoto ? 'User  profile photo' : 'Default Profile Photo' %>"
+                                class="w-11 h-11 rounded-full border-2 border-indigo-800 object-cover mr-4"
+                                aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                                stroke="#6366f1" class="w-5 h-5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <!-- Navbar Links -->
+                        <ul id="dropdownMenu"
+                            class="hidden absolute right-0 mt-2 w-48 bg-white text-indigo-800 rounded-md shadow-lg z-20"
+                            role="menu" aria-labelledby="dropdownButton">
+                            <h1 class="block px-4 py-2 text-xl font-semibold" id="user-name">
+                                <%= user.name %>
+                            </h1>
+                            <p class="block px-4 pb-2 text-indigo-600 break-words" id="user-email">
+                                <%= user.email %>
+                            </p>
+                            <li role="none"><a href="/users/profile"
+                                    class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem"
+                                    aria-label="Profile"><i class="fas fa-user"></i> Profile</a></li>
+                            <li role="none"><a href="/searchs/search-bar"
+                                    class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem"
+                                    aria-label="Jobs"><i class="fas fa-briefcase"></i> Jobs</a></li>
+                            <li role="none"><a href="/notifications"
+                                    class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem"
+                                    aria-label="Notifications"><i class="fas fa-bell"></i> Notifications</a></li>
+                            <li role="none"><a href="/settings"
+                                    class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem"
+                                    aria-label="Settings"><i class="fas fa-cogs"></i> Settings</a></li>
+                            <li role="none"><a href="/auths/logout"
+                                    class="block px-4 py-2 text-red-500 hover:text-red-600" role="menuitem"
+                                    aria-label="Logout"><i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                                    Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="w-full h-full flex-grow bg-white ">
+
+                <!-- Main Content -->
+                <div class="w-full bg-gradient-to-b from-white via-[#e1e0f2] to-white ">
+                    <!-- Header Section -->
+                    <section>
+                        <div class="mt-10 text-center text-lg md:text-3xl font-bold"
+                            style="font-family: Arial, Helvetica, sans-serif;">
+                            <%= employer.companyName %>
+                        </div>
+                        <p class="text-center text-xs sm:text-sm md:text-md"
+                            style="font-family: Arial, Helvetica, sans-serif;">Industry: <%= employer.industry %> |
+                                Location: <%= employer.companyLocation %>
+                        </p>
+                        <!-- Header section ends here -->
+                    </section>
+
+                    <!-- About Us Section -->
+                    <section >
+                        <div class="w-full grid grid-cols-3 gap-2 md:gap-5">
+                            <!-- Left Column -->
+                            <div class="flex flex-col justify-center items-center md:pl-28 md:pr-5 gap-5">
+                                <img src="/images/Screenshot_2025-01-24_163709-removebg-preview.png"
+                                    class="w-28  sm:w-32  md:w-52  object-fit backdrop-blur-xl mb-5">
+                                <img src="/images/Screenshot_2025-01-24_163915-removebg-preview (1).png"
+                                    class="w-20  sm:w-28  md:w-36  object-fit rotate-[5.19deg] ">
+                                <!-- Hidden on small screens -->
+                            </div>
+
+                            <!-- Center Column with About Us -->
+                            <div class="w-full flex flex-col justify-center items-center mt-5">
+                                <!-- About Us Title -->
+                                <div class="w-full flex flex-row justify-center items-center">
+                                    <div class="w-full h-full grid grid-rows-2">
+                                        <div class="w-full"></div>
+                                        <div class="w-full bg-white border-t-2 border-l-2 border-indigo-500 rounded-tl-xl"></div>
+                                    </div>
+                                    <div class="w-52 h-7 sm:w-60 lg:w-60 md:h-11 flex flex-row justify-center items-center rounded-lg bg-[#2F2883] ">
+                                        <h1 class="p-1 text-xs text-center text-white md:text-lg lg:text-xl font-serif">About us</h1>
+                                    </div>
+                                    <div class="w-full h-full grid grid-rows-2">
+                                        <div class="w-full"></div>
+                                        <div class="w-full bg-white border-t-2 border-r-2 border-indigo-500  rounded-tr-xl"></div>
+                                    </div>
+                                </div>
+                                <!-- About Us Content Box -->
+                                <div
+                                    class="w-full py-3 px-3 md:py-5 md:px-5 text-center z-0 rounded-xl rounded-t-[0px] bg-white text-indigo-800 border-2 border-indigo-500 border-t-0 drop-shadow-lg">
+                                    <p class="text-[8px]  font-semibold sm:text-xs md:text-sm lg:text-base">
+                                        <%= employer.companyDescription %>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Right Column -->
+                            <div class="flex flex-col justify-center items-center md:pl-5 md:pr-28 gap-5">
+                                <img src="/images/Screenshot_2025-01-25_015023-removebg-preview.png"
+                                    class="w-20 sm:w-32 md:w-44 object-fit rotate-[-16.69deg] mb-3 ">
+                                <!-- Hidden on small screens -->
+                                <img src="/images/Screenshot_2025-01-25_015252-removebg-preview.png"
+                                    class="w-32  sm:w-42  md:w-52 object-fit ">
+                            </div>
+                        </div>
+                        <!-- About us ends here -->
+                    </section>
+                </div>
+                    <div class="mt-16 sm:mt-16 md:mt-32 lg:mt-20 xl:mt-30">
+                        <!-- Search and Contact Section -->
+                        <div >
+                            <section class="flex flex-col justify-center items-center gap-5"> 
+                                <!-- search bar start here -->
+                                <!-- Search Jobs Title -->
+                                <div class="w-5/6 flex flex-col justify-center items-center mt-5">
+                                    <!-- About Us Title -->
+                                    <div class="w-full grid grid-cols-1 md:grid-cols-3">
+                                        <div class="w-full grid grid-rows-2">
+                                            <div></div>
+                                            <div class="w-full border-l-2 border-t-2 border-[#cdc9ff]  bg-[#e3e1fa] rounded-tl-xl drop-shadow-[-2px_-2px_2px_rgba(0,0,0,0.1)]"></div>
+                                        </div>
+                                        <section
+                                            class="w-full h-11 md:h-16 flex flex-col justify-center items-center rounded-lg bg-[#2F2883]">
+                                            <h1 class="pt-1 text-xs text-center text-white md:text-xl font-serif">Search Jobs</h1>
+                                            <h3 class="pb-1 text-xs sm:text-sm md:text-md text-white text-center">Explore your next big
+                                                opportunity.</h3>
+                                        </section>
+                                        <div class="w-full grid grid-rows-2">
+                                            <div></div>
+                                            <div class="w-full border-r-2 border-t-2 border-[#cdc9ff] bg-[#e3e1fa] rounded-tr-xl drop-shadow-[2px_-2px_2px_rgba(0,0,0,0.1)]"></div>
+                                        </div>
+                                    </div>
+                                
+                                <!-- Search Input Box -->
+                                <section
+                                    class="w-full max-w-7xl max-h-96 py-10 px-5 text-center flex flex-col items-center justify-center border-2 border-[#cdc9ff] border-t-[0px] bg-gradient-to-b from-[#e3e1fa] to-[#EDECFD] drop-shadow-[-2px_2px_2px_rgba(0,0,0,0.1)] drop-shadow-[2px_2px_2px_rgba(0,0,0,0.1)] ">
+                                    <div class="w-full mt-5 flex flex-row items-center">
+                                        <i class="fas fa-search w-20 py-2 md:py-3 text-center text-white bg-[#2F2883] rounded-l-full border-2 border-[#2F2883]"
+                                            aria-hidden="true"></i>
+                                        <input type="text" id="jobSearch" placeholder="Search jobs..."
+                                            class="w-full px-3 py-1 md:px-5 md:py-2 rounded-r-full border-2 border-[#4c6ef5] outline-none"
+                                            oninput="filterJobs()" aria-label="Search jobs">
+                                    </div>
+                                    <div class="w-full bg-white mt-5 rounded-lg">
+                                        <% if (employer.jobsPosted && employer.jobsPosted.length> 0) { %>
+                                            <!-- job card -->
+                                            <div class="flex flex-col gap-3 m-3 h-52 max-h-52 overflow-y-auto rounded-lg ">
+                                                <% employer.jobsPosted.forEach(job=> { %>
+                                                    <div
+                                                        class="job-item py-3 px-5 bg-[#7870D9] rounded-xl flex flex-row items-center justify-between">
+                                                        <h2 class="text-white text-sm md:text-lg font-serif">
+                                                            <%= job.title %>
+                                                        </h2>
+                                                        <a href="/jobs/<%= job._id %>"
+                                                            class="py-2 px-3 rounded-full text-xs md:text-md font-semibold text-white bg-[#2F2883] shadow-lg">View
+                                                            Details</a>
+                                                    </div>
+                                                    <% }); %>
+                                            <!-- whole job card end here -->
+                                            <div class="text-[#7870D9] text-base p-3">--No more Job--</div>
+                                            </div>
+                                            <% } else { %>
+                                                <p class="text-gray-600 text-lg">No jobs posted yet.</p>
+                                                <% } %>
+                                    </div>
+                                </section>
+                            </div>
+                                <!-- search bar ends here  --> 
+                            </section>
+                            <!-- Contact Information -->
+                            <section class="flex flex-col justify-center items-center mb-10">
+                                
+                                <div class="w-5/6 flex flex-row justify-center items-center mt-32">
+                                    <div class="w-full h-full"></div>
+                                    <img src="/images/Screenshot_2025-01-25_173800-removebg-preview.png"
+                                    class="w-32 sm:w-44 md:w-60 mb-0">
+                                    <div class="w-1/6 h-full"></div>
+                                </div>
+                                <div class="  w-5/6 max-w-7xl bg-gradient-to-b text-center from-white via-[#D3D0FF] to-white pb-10 mt-0">
+                                    <h1 class="text-xs md:text-lg text-center bg-[#2F2883] text-white p-5 rounded-lg inline-block mt-0">Contact Information</h1>
+                                    <section class="p-1 lg:px-[120px] xl:px-44 flex flex-row flex-wrap justify-center lg:justify-between items-center gap-2 mt-10">
+                                        <div class="flex flex-col items-center">
+                                            <div class=" w-full  h-10 rounded-xl  flex justify-center items-center">
+                                                <div class=" w-full h-full  flex flex-col">
+                                                    <div class="w-full h-1/2 "></div>
+                                                    <div class="w-full h-1/2 bg-white rounded-tl-xl"></div>
+                                                </div>
+                                                <div class="w-10 px-3 bg-[#2F2883]  h-10 rounded-lg flex justify-center items-center">
+                                                    <i class=" fas fa-phone text-center text-white"></i>
+                                                </div>
+                                                <div class=" w-full h-full flex flex-col">
+                                                    <div class="w-full h-1/2 "></div>
+                                                    <div class="w-full h-1/2 bg-white rounded-tr-xl"></div>
+                                                </div>
+                                            </div>
+                                            <div class="w-[100px] sm:w-32 md:w-48 xl:w-56 bg-white rounded-xl rounded-t-[0px] pb-5 pt-3 shadow-lg">
+                                                <h2 class="text-[#2F2883] text-center text-[11px] md:text-lg font-semibold">Phone:</h2>
+                                                <p class="text-[#2F2883] text-[9px] md:text-sm font-semibold text-center">
+                                                    <%= employer.phone || 'N/A' %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <div class=" w-full  h-10 rounded-xl  flex justify-center items-center">
+                                                <div class=" w-full h-full  flex flex-col">
+                                                    <div class="w-full h-1/2 "></div>
+                                                    <div class="w-full h-1/2 bg-white rounded-tl-xl"></div>
+                                                </div>
+                                                <div class="w-10 px-3 bg-[#2F2883]  h-10 rounded-lg flex justify-center items-center">
+                                                    <i class=" fas fa-envelope text-center text-white"></i>
+                                                </div>
+                                                <div class=" w-full h-full flex flex-col">
+                                                    <div class="w-full h-1/2 "></div>
+                                                    <div class="w-full h-1/2 bg-white rounded-tr-xl"></div>
+                                                </div>
+                                            </div>
+                                            <div class="w-[100px] sm:w-32 md:w-48 xl:w-56 bg-white rounded-xl rounded-t-[0px] pb-5 pt-3 shadow-lg">
+                                                <h2 class="text-[#2F2883] text-center text-[11px] md:text-lg font-semibold">Email:</h2>
+                                                <p class="text-[#2F2883] text-[9px] md:text-sm font-semibold text-center">
+                                                    <%= employer.email %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <div class=" w-full  h-10 rounded-xl  flex justify-center items-center">
+                                                <div class=" w-full h-full  flex flex-col">
+                                                    <div class="w-full h-1/2 "></div>
+                                                    <div class="w-full h-1/2 bg-white rounded-tl-xl"></div>
+                                                </div>
+                                                <div class="w-10 px-3 bg-[#2F2883]  h-10 rounded-lg flex justify-center items-center">
+                                                    <i class=" fas fa-globe text-center text-white"></i>
+                                                </div>
+                                                <div class=" w-full h-full flex flex-col">
+                                                    <div class="w-full h-1/2 "></div>
+                                                    <div class="w-full h-1/2 bg-white rounded-tr-xl"></div>
+                                                </div>
+                                            </div>
+                                            <div class="w-[100px] sm:w-32 md:w-48 xl:w-56 bg-white rounded-xl rounded-t-[0px] pb-5 pt-3 shadow-lg">
+                                                <h2 class="text-[#2F2883] text-center text-[11px] md:text-lg font-semibold">Website:</h2>
+                                                <p class="text-[#2F2883] text-[9px] md:text-sm font-semibold text-center break-words">
+                                                    <%= employer.socialLinks.website %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <!-- contact info ends here -->
+                                    </section>
+                                    <section class="w-full mt-5 flex flex-row justify-center items-center ">
+                                        <div
+                                            class="flex flex-row justify-center items-center gap-5 bg-white p-2 sm:p-5 md:p-5 rounded-xl shadow-lg">
+                                            <h3 class="xs:text-sm sm:text-md md:text-lg lg:text-xl xl:text-2xl text-center font-semibold text-black">Follow Us</h3>
+                                            <div class="flex space-x-4">
+                                                <% if (employer.socialLinks.facebook) { %>
+                                                    <a href="<%= employer.socialLinks.facebook %>"
+                                                        class="text-indigo-600 hover:text-indigo-800 transition duration-300"
+                                                        aria-label="Follow us on Facebook"><i
+                                                            class="fab fa-facebook text-2xl"></i></a>
+                                                    <% } %>
+                                                        <% if (employer.socialLinks.twitter) { %>
+                                                            <a href="<%= employer.socialLinks.twitter %>"
+                                                                class="text-indigo-600 hover:text-indigo-800 transition duration-300"
+                                                                aria-label="Follow us on Twitter"><i
+                                                                    class="fab fa-twitter text-2xl"></i></a>
+                                                            <% } %>
+                                                                <% if (employer.socialLinks.linkedin) { %>
+                                                                    <a href="<%= employer.socialLinks.linkedin %>"
+                                                                        class="text-indigo-600 hover:text-indigo-800 transition duration-300"
+                                                                        aria-label="Follow us on LinkedIn"><i
+                                                                            class="fab fa-linkedin text-2xl"></i></a>
+                                                                    <% } %>
+                                                                        <% if (employer.socialLinks.instagram) { %>
+                                                                            <a href="<%= employer.socialLinks.instagram %>"
+                                                                                class="text-indigo-600 hover:text-indigo-800 transition duration-300"
+                                                                                aria-label="Follow us on Instagram"><i
+                                                                                    class="fab fa-instagram text-2xl"></i></a>
+                                                                            <% } %>
+                                            </div>
+                                        </div>
+                                        <!-- social link ends here  -->
+                                    </section>
+                                    <div class="flex flex-row justify-center items-center mt-10 mb-20 ">
+                                        <div class="flex flex-col items-center">
+                                            <div class=" w-full  h-10 rounded-xl  flex justify-center items-center">
+                                                <div class=" w-full h-full  flex flex-col">
+                                                    <div class="w-full h-1/2 "></div>
+                                                    <div class="w-full h-1/2 bg-white rounded-tl-xl"></div>
+                                                </div>
+                                                <div class="w-10 px-3 bg-[#2F2883]  h-10 rounded-lg flex justify-center items-center">
+                                                    <i class=" fas fa-map-marker-alt text-center text-white"></i>
+                                                </div>
+                                                <div class=" w-full h-full flex flex-col">
+                                                    <div class="w-full h-1/2 "></div>
+                                                    <div class="w-full h-1/2 bg-white rounded-tr-xl"></div>
+                                                </div>
+                                            </div>
+                                            <div class="w-[200px] sm:w-[400px] md:w-[550px] lg:w-[700px] bg-white rounded-xl  rounded-t-[0px] pb-5 pt-3 shadow-lg">
+                                                <div>
+                                                    <iframe id="mapIframe" src="" width="100%" height="200px"
+                                                        data-address="<%= employer.companyLocation %>"
+                                                        title="Company Location Map" class="sm:h-[250px] md:h-[300px] lg:h-[350px]"></iframe>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- map ends here -->
+                                    </div>
+
+                                <!-- contact info ends -->
+                                </div>
+                            <!--whole  contact info ends -->
+                            </section>
+                        </div>
+                    <!-- whole search and contact ends here -->
+                    </div>
+        </main>   
+        <!-- Footer Section -->
+        <footer class="w-full bg-gray-800 text-white text-center py-4">
+            <p>&copy; 2025 Aarambh. All rights reserved.</p>
+        </footer>
+    </div>
+    
+
+
+
+    <script src="/js/toggleDropdown.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get the iframe element
+            const map = document.getElementById('mapIframe');
+
+            // Retrieve the data-address attribute
+            const locations = map.getAttribute('data-address');
+
+            if (!locations) {
+                console.error("No data-address attribute found on the iframe.");
+                return;
+            }
+
+            // Encode the location to ensure it works in a URL
+            const encodedLocation = encodeURIComponent(locations);
+
+            // Construct the Google Maps embed URL
+            const mapUrl = `https://maps.google.com/maps?q=${encodedLocation}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+
+            // Set the iframe's src attribute to the constructed URL
+            document.getElementById('mapIframe').src = mapUrl;
+            console.log("Map URL set to:", mapUrl);
+        });
+
+        function filterJobs() {
+            const searchInput = document.getElementById('jobSearch').value.toLowerCase();
+            const jobItems = document.querySelectorAll('.job-item');
+
+            jobItems.forEach(item => {
+                const jobTitle = item.textContent.toLowerCase();
+                if (jobTitle.includes(searchInput)) {
+                    item.style.display = ''; // Show item
+                } else {
+                    item.style.display = 'none'; // Hide item
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

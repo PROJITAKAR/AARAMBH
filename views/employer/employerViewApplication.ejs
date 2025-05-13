@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Applications | Aarambh</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 20px rgba(79, 70, 229, 0.15);
+            border-color: #6366f1;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .navbar-gradient {
+            background: linear-gradient(90deg, #4338ca, #6366f1);
+        }
+        
+        .dropdown-menu {
+            transform-origin: top right;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        
+        .profile-dropdown-button:hover {
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+
+        .action-button {
+            transition: all 0.2s ease;
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .page-header {
+            background: linear-gradient(90deg, #f9fafb, #eff6ff);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navbar Section -->
+    <nav class="w-full navbar-gradient text-white p-4 px-6 md:px-16 border-b-2 shadow-lg sticky top-0 z-50" aria-label="Main navigation">
+        <div class="flex flex-wrap items-center justify-between max-w-7xl mx-auto">
+            <a href="/" class="flex items-center space-x-3" aria-label="Go to homepage">
+                <!-- Logo could be added here -->
+                <span class="text-2xl font-bold tracking-tight">Aarambh</span>
+            </a>
+            
+            <div class="flex items-center space-x-6">
+                <a href="/notifications" class="relative p-2 rounded-full hover:bg-indigo-600 transition-colors" aria-label="Notifications">
+                    <i class="fas fa-bell text-white text-xl" aria-hidden="true"></i>
+                    <!-- Notification badge could be added here -->
+                </a>
+                
+                <div class="relative">
+                    <button 
+                        id="dropdownButton" 
+                        class="profile-dropdown-button flex items-center space-x-2 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-full pr-4 pl-1 py-1 focus:outline-none transition-all duration-200"
+                        aria-haspopup="true" 
+                        aria-expanded="false" 
+                        onclick="toggleDropdown(event)"
+                        aria-label="User Profile Dropdown">
+                        <img src="<%= employer.profilePhoto? 'data:profilePhoto/png;base64,'+employer.profilePhoto.toString('base64') : '/images/image.png'%>" 
+                             alt="<%= employer.profilePhoto ? 'User profile photo' : 'Default Profile Photo' %>" 
+                             class="w-10 h-10 rounded-full border-2 border-white object-cover" 
+                             aria-hidden="true">
+                        <span class="hidden md:block font-medium truncate max-w-[120px]"><%= employer.companyName %></span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 ml-1">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <ul id="dropdownMenu" 
+                        class="hidden absolute right-0 mt-2 w-60 bg-white text-gray-700 rounded-xl shadow-xl z-10 dropdown-menu py-2 border border-gray-100" 
+                        role="menu" aria-labelledby="dropdownButton">
+                        <div class="px-4 py-3 border-b border-gray-100">
+                            <h1 class="text-lg font-semibold text-gray-800 truncate" id="user-name"><%= employer.companyName %></h1>
+                            <p class="text-sm text-indigo-600 truncate" id="user-email"><%= employer.email %></p>
+                        </div>
+                        <li role="none" class="hover:bg-gray-50">
+                            <a href="/employers/dashboard" class="flex items-center px-4 py-2 text-gray-700" role="menuitem">
+                                <i class="fas fa-tachometer-alt w-5 text-indigo-500"></i>
+                                <span class="ml-3">Dashboard</span>
+                            </a>
+                        </li>
+                        <li role="none" class="hover:bg-gray-50">
+                            <a href="/employers/profile" class="flex items-center px-4 py-2 text-gray-700" role="menuitem">
+                                <i class="fas fa-user w-5 text-indigo-500"></i>
+                                <span class="ml-3">Profile</span>
+                            </a>
+                        </li>
+                        <li role="none" class="hover:bg-gray-50">
+                            <a href="/jobs/employer/show-jobs" class="flex items-center px-4 py-2 text-gray-700" role="menuitem">
+                                <i class="fas fa-briefcase w-5 text-indigo-500"></i>
+                                <span class="ml-3">Manage Jobs</span>
+                            </a>
+                        </li>
+                        <li role="none" class="hover:bg-gray-50">
+                            <a href="/employers/notifications" class="flex items-center px-4 py-2 text-gray-700" role="menuitem">
+                                <i class="fas fa-bell w-5 text-indigo-500"></i>
+                                <span class="ml-3">Notifications</span>
+                            </a>
+                        </li>
+                        <li role="none" class="hover:bg-gray-50">
+                            <a href="/settings" class="flex items-center px-4 py-2 text-gray-700" role="menuitem">
+                                <i class="fas fa-cogs w-5 text-indigo-500"></i>
+                                <span class="ml-3">Settings</span>
+                            </a>
+                        </li>
+                        <li role="none" class="border-t mt-2 pt-1">
+                            <a href="/auths/logout" class="flex items-center px-4 py-2 text-red-600 hover:bg-red-50" role="menuitem">
+                                <i class="fas fa-sign-out-alt w-5"></i>
+                                <span class="ml-3">Logout</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <div class="page-header p-8 mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Applications Dashboard</h1>
+            <p class="text-gray-600">Review and manage candidate applications for your job postings</p>
+            
+            <div class="mt-6 flex flex-wrap gap-4">
+                <a href="/jobs/employer/show-jobs" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-briefcase mr-2 text-indigo-500"></i>
+                    Manage Jobs
+                </a>
+                <a href="/employers/dashboard" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-tachometer-alt mr-2 text-indigo-500"></i>
+                    Dashboard
+                </a>
+                <a href="/jobs/create" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-indigo-700 transition-colors ml-auto">
+                    <i class="fas fa-plus mr-2"></i>
+                    Post New Job
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <% if (applications && applications.length > 0) { %>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <% applications.forEach(application => { %>
+                    <div class="card bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col">
+                        <!-- Status Badge -->
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="
+                                status-badge
+                                <% if (application.status === 'pending') { %> bg-yellow-100 text-yellow-800 <% } %>
+                                <% if (application.status === 'reviewed') { %> bg-blue-100 text-blue-800 <% } %>
+                                <% if (application.status === 'accepted') { %> bg-green-100 text-green-800 <% } %>
+                                <% if (application.status === 'rejected') { %> bg-red-100 text-red-800 <% } %>
+                            ">
+                                <% if (application.status === 'pending') { %><i class="fas fa-clock mr-2"></i><% } %>
+                                <% if (application.status === 'reviewed') { %><i class="fas fa-eye mr-2"></i><% } %>
+                                <% if (application.status === 'accepted') { %><i class="fas fa-check-circle mr-2"></i><% } %>
+                                <% if (application.status === 'rejected') { %><i class="fas fa-times-circle mr-2"></i><% } %>
+                                <%= application.status.charAt(0).toUpperCase() + application.status.slice(1) %>
+                            </div>
+                            <span class="text-xs text-gray-500"><%= application.createdAt.toLocaleDateString() %></span>
+                        </div>
+
+                        <!-- Job Title -->
+                        <h2 class="text-xl font-semibold text-gray-800 mb-3">
+                            <%= application.job.title %>
+                        </h2>
+                        
+                        <!-- Applicant Info -->
+                        <div class="flex items-center mb-4">
+                            <% if (application.applicant.profilePhoto) { %>
+                                <img 
+                                    src="data:profilePhoto/png;base64,<%= application.applicant.profilePhoto.toString('base64') %>" 
+                                    alt="Profile Photo" 
+                                    class="w-12 h-12 rounded-full border-2 border-indigo-200 object-cover shadow-sm"
+                                >
+                            <% } else { %>
+                                <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center border-2 border-indigo-200">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            <% } %>
+                            <div class="ml-3">
+                                <h3 class="font-medium text-gray-900"><%= application.applicant.name %></h3>
+                                <p class="text-sm text-gray-500">Applicant</p>
+                            </div>
+                        </div>
+
+                        <!-- Internal Feedback (if available) -->
+                        <% if (application.status === 'reviewed' && application.feedback) { %>
+                            <div class="mt-2 mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                <h3 class="text-sm font-medium text-gray-700 flex items-center mb-1">
+                                    <i class="fas fa-comment-alt text-indigo-500 mr-2"></i>
+                                    Internal Feedback (Only for employer use)
+                                </h3>
+                                <p class="text-sm text-gray-600"><%= application.feedback %></p>
+                            </div>
+                        <% } %>
+
+                        <!-- Spacer to push button to bottom -->
+                        <div class="flex-grow"></div>
+
+                        <!-- View Details Button -->
+                        <a href="/employers/application-details/<%= application._id %>" 
+                        class="action-button mt-4 w-full text-center bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 font-medium shadow-sm flex items-center justify-center">
+                            <i class="fas fa-file-alt mr-2"></i>
+                            View Complete Details
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="text-center py-16">
+                <div class="mb-4 text-indigo-400">
+                    <i class="fas fa-inbox text-5xl"></i>
+                </div>
+                <h2 class="text-2xl font-semibold text-gray-700 mb-2">No applications yet</h2>
+                <p class="text-gray-500 max-w-md mx-auto">
+                    You haven't received any applications for your job postings yet. Check back later or post more jobs to attract candidates.
+                </p>
+                <a href="/jobs/create" class="mt-6 inline-flex items-center px-4 py-2 bg-indigo-600 rounded-md text-white font-medium hover:bg-indigo-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>
+                    Post New Job
+                </a>
+            </div>
+        <% } %>
+    </div>
+
+    <script>
+        function toggleDropdown(event) {
+            event.preventDefault();
+            const menu = document.getElementById('dropdownMenu');
+            const button = document.getElementById('dropdownButton');
+            
+            if (menu.classList.contains('hidden')) {
+                // Show menu
+                menu.classList.remove('hidden');
+                menu.classList.add('block');
+                button.setAttribute('aria-expanded', 'true');
+                
+                // Add event listener to close when clicking outside
+                document.addEventListener('click', closeDropdownOutside);
+            } else {
+                // Hide menu
+                closeDropdown();
+            }
+        }
+        
+        function closeDropdown() {
+            const menu = document.getElementById('dropdownMenu');
+            const button = document.getElementById('dropdownButton');
+            
+            menu.classList.add('hidden');
+            menu.classList.remove('block');
+            button.setAttribute('aria-expanded', 'false');
+            
+            // Remove event listener
+            document.removeEventListener('click', closeDropdownOutside);
+        }
+        
+        function closeDropdownOutside(event) {
+            const menu = document.getElementById('dropdownMenu');
+            const button = document.getElementById('dropdownButton');
+            
+            if (!menu.contains(event.target) && !button.contains(event.target)) {
+                closeDropdown();
+            }
+        }
+    </script>
+</body>
+</html>

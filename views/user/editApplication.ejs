@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Application</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.2/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+    <!-- Main Container -->
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-gray-800 text-white py-4 px-6">
+            <h1 class="text-2xl font-semibold">Edit Application</h1>
+        </header>
+
+        <!-- Form Section -->
+        <main class="flex-1 container mx-auto p-6">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6">Edit Job Application</h2>
+
+            <!-- Display Error and Success Messages -->
+            <% if (error && error.length > 0) { %>
+                <div class="bg-red-100 text-red-700 border-l-4 border-red-500 p-4 mb-4">
+                    <p><strong>Error:</strong> <%= error[0] %></p>
+                </div>
+            <% } %>
+            
+
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <form action="/applications/user/update-application?_method=PUT" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    <!-- Application ID (Hidden Field) -->
+                    <input type="text" name="applicationId" value="<%= application._id %>" hidden>
+
+                    <!-- Job Title -->
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Job Title:</label>
+                        <input type="text" value="<%= application.job.title %>" disabled class="w-full px-4 py-2 border rounded bg-gray-100">
+                    </div>
+
+                    <!-- Uploaded Resume -->
+                    <div >
+                        <label class="block text-gray-700 font-medium mb-2">Current Resume:</label>
+                        <% if (application.resume) { %>
+                            <iframe 
+                                src="data:application/pdf;base64,<%= application.resume.toString('base64') %>" 
+                                type="application/pdf" 
+                                width="50%" 
+                                height="300px" 
+                                class="mb-10 border-2 border-gray-200">
+                            </iframe>
+                        <% } else { %>
+                            <p class="text-gray-600">No resume uploaded.</p>
+                        <% } %>
+                    </div>
+
+                    <!-- Upload New Resume -->
+                    <div>
+                        <label for="resume" class="block text-gray-700 font-medium mb-2">Upload New Resume (PDF only):</label>
+                        <input type="file" name="resume" id="resume" accept=".pdf" class="w-full px-4 py-2 border rounded">
+                        <small class="text-red-800">Max file size: 5MB</small>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div>
+                        <label for="additionalInfo" class="block text-gray-700 font-medium mb-2">Additional Information (Optional):</label>
+                        <textarea name="additionalInformation" id="additionalInfo" rows="4" class="w-full px-4 py-2 border rounded"><%= application.additionalInformation %></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="text-right">
+                        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 text-lg font-medium">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white text-center py-4">
+            <p>&copy; 2025 Job Seekers Platform | All Rights Reserved</p>
+        </footer>
+    </div>
+    <script>
+        // Client-side validation to ensure file size is below 5MB
+        document.getElementById("resume").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file && file.size > 5 * 1024 * 1024) {  // 5MB limit
+                alert("File size exceeds 5MB. Please upload a smaller file.");
+                event.target.value = '';  // Clear the selected file
+            }
+        });
+    </script>
+
+</body>
+</html>

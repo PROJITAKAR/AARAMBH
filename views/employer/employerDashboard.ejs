@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.2/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-indigo-100">
+
+    <!-- Dashboard Main Container -->
+    <div class="flex flex-col" role="main">
+
+        <!-- Top Navbar Section -->
+        <nav class="w-full bg-indigo-700 text-white p-3 px-16 border-b-2" aria-label="Main navigation">
+            <div class="flex flex-wrap items-center justify-between">
+                <a href="/" class="pl-5 text-2xl font-semibold" aria-label="Go to homepage">Aarambh</a>
+                
+                <div class="flex flex-row justify-center items-center space-x-6">
+                    <div>
+                        <a href="/notifications" class="text-white hover:text-indigo-800" aria-label="Notifications">
+                            <i class="fas fa-bell text-white hover:text-gray-200 text-2xl" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                    <div class="relative">
+                        <button 
+                            id="dropdownButton" 
+                            class="w-30 h-12 border-4 border-indigo-100 hover:border-indigo-200 rounded-3xl flex items-center space-x-2 bg-indigo-100 pr-4 py-2 hover:bg-indigo-200 focus:outline-none"
+                            aria-haspopup="true" 
+                            aria-expanded="false" 
+                            onclick="toggleDropdown(event)"
+                            aria-label="User Profile Dropdown">
+                            <img src="<%= employer.profilePhoto? 'data:profilePhoto/png;base64,'+employer.profilePhoto.toString('base64') : '/images/image.png'%>" alt="<%= employer.profilePhoto ? 'User profile photo' : 'Default Profile Photo' %>" class="w-11 h-11 rounded-full border-2 border-indigo-800 object-cover mr-4" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="#6366f1" class="w-5 h-5" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+    
+                        <!-- Navbar Links -->
+                        <ul id="dropdownMenu" 
+                            class="hidden absolute right-0 mt-2 w-48 bg-white text-indigo-800 rounded-md shadow-lg z-10" 
+                            role="menu" aria-labelledby="dropdownButton">
+                            <h1 class="block px-4 py-2 text-xl font-semibold overflow-x-hidden" id="user-name"><%= employer.companyName %></h1>
+                            <p class="block px-4 pb-2 text-indigo-600 break-words" id="user-email"><%= employer.email %></p>
+                            <li role="none"><a href="/employers/dashboard" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Profile"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                            <li role="none"><a href="/employers/profile" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Profile"><i class="fas fa-user"></i> Profile</a></li>
+                            <li role="none"><a href="/jobs/employer/show-jobs" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Jobs"><i class="fas fa-briefcase"></i>Manage Jobs</a></li>
+                            <li role="none"><a href="/employers/notifications" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Notifications"><i class="fas fa-bell"></i> Notifications</a></li>
+                            <li role="none"><a href="/settings" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Settings"><i class="fas fa-cogs"></i> Settings</a></li>
+                            <li role="none"><a href="/auths/logout" class="block px-4 py-2 text-red-500 hover:text-red-600" role="menuitem" aria-label="Logout"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        
+        <!-- Main Content Section -->
+        <div class="flex-1 p-8">
+
+            <!-- Dashboard Header -->
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-semibold text-gray-800">Employer Dashboard</h2>
+            </div>
+
+            <!-- Overview Stats Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold text-gray-700">Active Job Listings</h3>
+                    <p class="text-gray-600 mt-2"><%= employer.jobsPosted.length %> active job listings.</p>
+                    <a href="/jobs/employer/show-jobs" class="text-indigo-600 hover:text-indigo-800 mt-2 inline-block">View Jobs</a>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold text-gray-700">Applications Received</h3>
+                    <p class="text-gray-600 mt-2">20 applications received.</p>
+                    <a href="/employers/manage-applications" class="text-indigo-600 hover:text-indigo-800 mt-2 inline-block">View Applications</a>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold text-gray-700">Company Profile Completion</h3>
+                    <p class="text-gray-600 mt-2">Your company profile is 80% complete.</p>
+                    <a href="/employers/profile" class="text-indigo-600 hover:text-indigo-800 mt-2 inline-block">Complete Profile</a>
+                </div>
+            </div>
+
+            
+            <!-- Notifications Section -->
+            <section class="bg-white p-6 rounded-lg shadow-lg" aria-labelledby="notifications">
+                <h3 class="text-2xl font-semibold text-gray-700" id="notifications">Notifications</h3>
+                <a href="/employers/notifications" class="text-indigo-600 text-sm hover:underline">See all</a>
+                <ul class="space-y-4 mt-4">
+                    <% notifications.slice(0, 3).forEach(n => { %>
+                        <li>
+                            <a href="/employers/notifications" class="text-gray-900 font-semibold"><%= n.title %></a>
+                            <div class="full-message hidden"><%- n.message %></div>
+
+                            <!-- Truncated preview (will be filled by JS) -->
+                            <div class="preview-message text-gray-700 text-sm"></div>                        </li>
+                    <% }) %>
+                </ul>                
+            </section>
+        </div>
+
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="w-full bg-gray-800 text-white text-center py-4 mt-1">
+        <p>&copy; 2025 Job Seekers Platform | All Rights Reserved</p>
+    </footer>
+    <script src="/js/toggleDropdown.js"></script>
+    <script>
+        document.querySelectorAll('.full-message').forEach(fullDiv => {
+          const previewDiv = fullDiv.nextElementSibling;
+          const temp = document.createElement('div');
+          temp.innerHTML = fullDiv.innerHTML;
+
+          const plainText = temp.textContent || temp.innerText || '';
+          const truncated = plainText.length > 50 ? plainText.slice(0, 50) + '...' : plainText;
+
+          previewDiv.textContent = truncated;
+        });
+    </script>
+</body>
+</html>

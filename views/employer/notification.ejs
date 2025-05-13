@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employer Notifications | Aarambh</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .notification-card {
+      transition: all 0.3s ease;
+      border-left: 4px solid transparent;
+    }
+    
+    .notification-card:hover {
+      border-left-color: #4f46e5;
+    }
+    
+    .notification-new {
+      position: relative;
+    }
+    
+    .notification-new::after {
+      content: '';
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 10px;
+      height: 10px;
+      background-color: #4f46e5;
+      border-radius: 50%;
+    }
+    
+    .gradient-text {
+      background: linear-gradient(90deg, #4f46e5, #6366f1);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 antialiased">
+  <div class="min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="bg-indigo-900 text-white shadow-lg">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+          <a href="/" class="flex items-center space-x-2">
+            <i class="fas fa-rocket text-2xl text-indigo-300"></i>
+            <span class="text-2xl font-bold tracking-tight">Aarambh</span>
+          </a>
+          
+          <div class="hidden md:flex items-center space-x-6">
+            <a href="/employers/dashboard" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-indigo-800 transition-colors">
+              <i class="fas fa-tachometer-alt"></i>
+              <span>Dashboard</span>
+            </a>
+            <a href="/jobs/employer/show-jobs" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-indigo-800 transition-colors">
+              <i class="fas fa-briefcase"></i>
+              <span>My Jobs</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2 px-3 py-2 rounded-md bg-indigo-700 hover:bg-indigo-600 transition-colors">
+              <i class="fas fa-plus"></i>
+              <span>Post Job</span>
+            </a>
+            <div class="relative">
+              <a href="#" class="flex items-center space-x-2 px-2 py-2 rounded-full hover:bg-indigo-800 transition-colors">
+                <i class="fas fa-user-circle text-xl"></i>
+              </a>
+            </div>
+          </div>
+          
+          <button class="md:hidden focus:outline-none">
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="bg-gradient-to-r from-indigo-900 to-purple-800 text-white">
+      <div class="container mx-auto px-6 py-10">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Notifications</h1>
+            <p class="text-indigo-200">Stay updated with your job applications and new candidates</p>
+          </div>
+          <div class="mt-6 md:mt-0">
+            <a href="/employers/notification/markAllRead" class="bg-white text-indigo-700 px-4 py-2 rounded-lg shadow-md hover:bg-indigo-50 transition-colors flex items-center space-x-2">
+              <i class="fas fa-check-double"></i>
+              <span>Mark All as Read</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 md:px-6 py-10 flex-grow">
+      <!-- Spacer for layout balance -->
+      <div class="mb-8"></div>
+
+      <!-- Notifications Content -->
+      <% if (notifications.length > 0) { %>
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <% notifications.forEach((notification, index) => { %>
+            <div class="notification-card <%= !notification.isRead ? 'notification-new' : '' %> bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden break-words">
+              <div class="p-6">
+                <!-- Notification Header -->
+                <div class="flex justify-between items-start mb-4">
+                  <div class="flex items-center space-x-3">
+                    <% if (notification.type === 'New Application') { %>
+                      <div class="bg-indigo-100 p-2 rounded-full">
+                        <i class="fas fa-user-plus text-indigo-600"></i>
+                      </div>
+                    <% } else { %>
+                      <div class="bg-blue-100 p-2 rounded-full">
+                        <i class="fas fa-bell text-blue-600"></i>
+                      </div>
+                    <% } %>
+                    <h2 class="text-lg font-semibold text-gray-800"><%= notification.title %></h2>
+                  </div>
+                </div>
+
+                <!-- Message -->
+                <div class="mb-8">
+                  <p class="text-gray-700 leading-relaxed"><%- notification.message %></p>
+                </div>
+
+                <!-- Related Job and Applicant Info -->
+                <% if (notification.type === 'New Application') { %>
+                  <div class="bg-gray-50 p-3 rounded-md mb-4">
+                    <div class="flex items-center space-x-2 mb-2">
+                      <i class="fas fa-briefcase text-indigo-500"></i>
+                      <p class="font-medium text-gray-800"><%= notification.job.title %></p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <i class="fas fa-map-marker-alt text-indigo-500"></i>
+                      <p class="text-gray-600"><%= notification.job.location %></p>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-2 mb-4">
+                    <div class="bg-indigo-500 text-white rounded-full w-8 h-8 flex items-center justify-center">
+                      <%= notification.user.name.charAt(0).toUpperCase() %>
+                    </div>
+                    <p class="text-gray-700"><%= notification.user.name %></p>
+                  </div>
+                  <a href="/employers/application-details/<%= notification.application %>" class="inline-flex items-center space-x-2 text-white bg-indigo-600 px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors shadow-md">
+                    <i class="fas fa-eye"></i>
+                    <span>View Application</span>
+                  </a>
+                <% } else { %>
+                  <p class="text-gray-600 text-sm"><strong>Type:</strong> <%= notification.type %></p>
+                <% } %>
+
+                <!-- Timestamp and Action Buttons -->
+                <div class="mt-5 pt-4 border-t border-gray-100">
+                  <div class="flex flex-wrap justify-between items-center">
+                    <p class="text-gray-500 text-sm flex items-center">
+                      <i class="far fa-clock mr-2"></i>
+                      <%= new Date(notification.createdAt).toLocaleString() %>
+                    </p>
+                    <div class="flex space-x-2 mt-2 sm:mt-0">
+                      <% if (!notification.isRead) { %>
+                        <a href="/employers/notification/markRead/<%= notification._id %>" 
+                           class="inline-flex items-center text-gray-600 bg-gray-100 px-3 py-1 rounded hover:bg-gray-200 transition-colors text-sm">
+                          <i class="fas fa-check mr-1"></i>
+                          Mark Read
+                        </a>
+                      <% } else { %>
+                        <span class="inline-flex items-center text-green-600 bg-green-100 px-3 py-1 rounded text-sm cursor-default">
+                          <i class="fas fa-check-double mr-1"></i>
+                          Read
+                        </span>
+                      <% } %>
+                      <a href="/employers/notification/delete/<%= notification._id %>" 
+                         class="inline-flex items-center text-red-600 bg-red-50 px-3 py-1 rounded hover:bg-red-100 transition-colors text-sm">
+                        <i class="fas fa-trash-alt mr-1"></i>
+                        Delete
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+
+        <div class="mt-8"></div>
+      <% } else { %>
+        <div class="flex flex-col items-center justify-center py-12">
+          <div class="bg-indigo-100 p-4 rounded-full mb-4">
+            <i class="fas fa-bell-slash text-4xl text-indigo-500"></i>
+          </div>
+          <h3 class="text-2xl font-semibold text-gray-800 mb-2">No Notifications Yet</h3>
+          <p class="text-gray-600 text-center max-w-md mb-6">You have no new notifications. We'll notify you when there are updates on your job listings or applications.</p>
+          <a href="/jobs/employer/show-jobs" class="inline-flex items-center space-x-2 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
+            <i class="fas fa-plus"></i>
+            <span>Post a New Job</span>
+          </a>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-indigo-900 text-white">
+      <div class="container mx-auto px-6 py-8">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="mb-6 md:mb-0">
+            <div class="flex items-center space-x-2">
+              <i class="fas fa-rocket text-2xl text-indigo-300"></i>
+              <span class="text-2xl font-bold">Aarambh</span>
+            </div>
+            <p class="mt-2 text-indigo-200">Connecting great talent with amazing opportunities</p>
+          </div>
+          <div class="flex flex-wrap justify-center gap-x-8 gap-y-4">
+            <a href="#" class="text-indigo-200 hover:text-white transition-colors">Dashboard</a>
+            <a href="#" class="text-indigo-200 hover:text-white transition-colors">Post Job</a>
+            <a href="#" class="text-indigo-200 hover:text-white transition-colors">Help Center</a>
+            <a href="#" class="text-indigo-200 hover:text-white transition-colors">Contact</a>
+          </div>
+          <div class="mt-6 md:mt-0">
+            <div class="flex space-x-4">
+              <a href="#" class="text-indigo-200 hover:text-white transition-colors">
+                <i class="fab fa-linkedin text-xl"></i>
+              </a>
+              <a href="#" class="text-indigo-200 hover:text-white transition-colors">
+                <i class="fab fa-twitter text-xl"></i>
+              </a>
+              <a href="#" class="text-indigo-200 hover:text-white transition-colors">
+                <i class="fab fa-facebook text-xl"></i>
+              </a>
+              <a href="#" class="text-indigo-200 hover:text-white transition-colors">
+                <i class="fab fa-instagram text-xl"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-indigo-800 mt-8 pt-6 text-center text-indigo-300">
+          <p>&copy; 2025 Aarambh Employer Portal | All Rights Reserved</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Simple animation for new notifications
+    document.addEventListener('DOMContentLoaded', function() {
+      const newNotifications = document.querySelectorAll('.notification-new');
+      newNotifications.forEach(card => {
+        card.classList.add('pulse');
+      });
+    });
+  </script>
+</body>
+</html>

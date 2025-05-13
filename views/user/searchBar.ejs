@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Search</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <style>
+        .pagination {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.pagination a {
+    margin: 0 5px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+.pagination a.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination a:hover {
+    background-color: #f0f0f0;
+}
+    </style>
+</head>
+<body class="bg-indigo-100">
+
+    <nav class="w-full bg-indigo-700 text-white p-3 px-16 border-b-2" aria-label="Main navigation">
+        <div class="flex flex-wrap items-center justify-between">
+            <a href="/" class="pl-5 text-2xl font-semibold" aria-label="Go to homepage" title="Homepage">Aarambh</a>
+
+            <form id="searchForm" method="GET" action="/searchs/search-bar" class="w-1/2 h-11 py-4 min-w-1/4 flex items-center border-2 border-gray-300 rounded-full overflow-hidden hover:border-indigo-500 transition duration-200" role="search" aria-label="Job Search Form">
+                <input type="text" id="keyword" name="keyword" placeholder="Search for jobs..." value="<%= filters.keyword || '' %>" class="px-7 py-3 w-full text-gray-700 focus:outline-none" aria-label="Search for jobs" title="Enter job keywords">
+                <% if(filters.keyword && filters.keyword.length > 0){%>
+                    <button type="button" onclick="clearKeyword()" class="px-3 py-3 bg-white flex items-center" aria-label="Clear search keyword" title="Clear search keyword">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="#5e5e5e">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                <%}%>
+                
+                <button type="submit" class="bg-indigo-800 text-white px-4 py-3 hover:bg-indigo-700 transition duration-200" aria-label="Search" title="Search for jobs">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                </button>
+            </form>
+            
+            <div class="flex flex-row justify-center items-center space-x-6">
+                <div>
+                    <a href="/notifications" class="text-white hover:text-indigo-800" aria-label="Notifications" title="View notifications">
+                        <i class="fas fa-bell text-white hover:text-gray-200 text-2xl" aria-hidden="true"></i>
+                    </a>
+                </div>
+                <div class="relative">
+                    <button 
+                        id="dropdownButton" 
+                        class="w-30 h-12 border-4 border-indigo-100 hover:border-indigo-200 rounded-3xl flex items-center space-x-2 bg-indigo-100 pr-4 py-2 hover:bg-indigo-200 focus:outline-none"
+                        aria-haspopup="true" 
+                        aria-expanded="false" 
+                        onclick="toggleDropdown(event)"
+                        aria-label="User  Profile Dropdown" title="User  Profile">
+                        <img src="<%= user.profilePhoto? 'data:profilePhoto/png;base64,'+user.profilePhoto.toString('base64') : '/images/default.png'%>" alt="<%= user.profilePhoto ? 'User  profile photo' : 'Default Profile Photo' %>" class="w-11 h-11 rounded-full border-2 border-indigo-800 object-cover mr-4" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="#6366f1" class="w-5 h-5" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Navbar Links -->
+                    <ul id="dropdownMenu" 
+                        class="hidden absolute right-0 mt-2 w-48 bg-white text-indigo-800 rounded-md shadow-lg z-10" 
+                        role="menu" aria-labelledby="dropdownButton">
+                        <h1 class="block px-4 py-2 text-xl font-semibold" id="user-name" title="User  Name"><%= user.name %></h1>
+                        <p class="block px-4 pb-2 text-indigo-600 break-words" id="user-email" title="User  Email"><%= user.email %></p>
+                        <li role="none"><a href="/users/dashboard" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Profile"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li role="none"><a href="/users/profile" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Profile" title="View Profile"><i class="fas fa-user"></i> Profile</a></li>
+                        <li role="none"><a href="/searchs/search-bar" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Jobs" title="View Jobs"><i class="fas fa-briefcase"></i> Jobs</a></li>
+                        <li role="none"><a href="/users/show/saved-jobs" class="block px-4 py-2 text-indigo-600 hover:text-indigo-80" role="menuitem" aria-label="Saved Jobs" title="View Saved Jobs"><i class="fas fa-heart"></i> Saved Jobs</a></li>
+                        <li role="none"><a href="/notifications" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Notifications" title="View Notifications"><i class="fas fa-bell"></i> Notifications</a></li>
+                        <li role="none"><a href="/settings" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Settings" title="View Settings"><i class="fas fa-cogs"></i> Settings</a></li>
+                        <li role="none"><a href="/auths/logout" class="block px-4 py-2 text-red-500 hover:text-red-600" role="menuitem" aria-label="Logout" title="Logout"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mx-auto py-10 px-10" role="main">
+        <button id="filterBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-blue-300" aria-label="Open Filters" title="Open Filters">
+            <i class="fas fa-filter mr-2" aria-hidden="true"></i> Filters
+        </button>
+        <!-- Search Bar -->
+        <div id="filterModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50" aria-labelledby="filterModalTitle" role="dialog" aria-modal="true">
+            <form id="filterForm" method="GET" action="/searchs/search-bar" aria-label="Job Filter Form" class="p-72" >
+                <!-- Filters -->
+                <div class="bg-white p-5 rounded-lg shadow-md mb-6">
+                    <div class="mb-5 pl-5 flex flex-row justify-between">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4" id="filterModalTitle">Filters</h3>
+                        <button id="closeFilterModal" class="px-2 py-2 rounded-lg hover: focus:outline-none focus:ring-2 focus:ring-gray-700 flex items-center" aria-label="Close filter" title="Close filter">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 " fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-3 "> <!-- Use flex layout with wrapping -->
+                        <!-- Job Type -->
+                        <div class="w-52"> <!-- Set a minimum width for each filter -->
+                            <label for="jobType" class="block text-sm font-medium text-gray-700">Job Type</label>
+                            <select id="jobType" name="jobType" class="w-full p-2 text-sm font-semibold border border-gray-300 rounded-md" aria-label="Select Job Type" title="Select Job Type">
+                                <option value="">All Types</option>
+                                <option value="Full-time" <%= (filters.jobType === 'Full-time') ? "selected" : "" %> >Full-Time</option>
+                                <option value="Part-time" <%= (filters.jobType === 'Part-time') ? "selected" : "" %> >Part-Time</option>
+                                <option value="Remote" <%= (filters.jobType === 'Remote') ? "selected" : "" %> >Remote</option>
+                                <option value="Contract" <%= (filters.jobType === 'Contract') ? "selected" : "" %> >Contract</option>
+                            </select>
+                        </div>
+        
+                        <!-- Location -->
+                        <div class="w-52">
+                            <label for="citiesList" class="block text-sm font-medium text-gray-700">Job Location</label>
+                            <select id="citiesList" name="citiesList" data-filter="<%= filters.citiesList %>" class="w-full p-2 text-sm font-semibold border border-gray-300 rounded-md" aria-label="Select Job Location" title="Select Job Location">
+                                <option value="">Job Location</option>
+                            </select>
+                        </div>
+        
+                        <!-- Salary Range -->
+                        <div class="w-52">
+                            <label for="minSalary" class="block text-sm font-medium text-gray-700">Min Salary:</label>
+                            <select id="minSalary" name="minSalary" data-filter="<%= filters.minSalary%>" class="w-full p-2 text-sm font-semibold border border-gray-300 rounded-md" aria-label="Select Minimum Salary" title="Select Minimum Salary">
+                                <option value=0 >Min Salary</option>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                        
+                        <div class="w-52">
+                            <label for="maxSalary" class="block text-sm font-medium text-gray-700">Max Salary:</label>
+                            <select id="maxSalary" name="maxSalary" data-filter="<%= filters.maxSalary%>" class="w-full p-2 text-sm font-semibold border border-gray-300 rounded-md" aria-label="Select Maximum Salary" title="Select Maximum Salary">
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                        
+        
+                        <!-- Company -->
+                        <div class="w-52">
+                            <label for="company" class="block text-sm font-medium text-gray-700">Company</label>
+                            <select id="company" name="company" class="w-full p-2 text-sm font-semibold border border-gray-300 rounded-md" aria-label="Select Company" title="Select Company">
+                                <option value="">Company</option>
+                                <% if (companies.length === 0) { %>
+                                    <option value="" disabled>No companies available</option>
+                                <% } else { %>
+                                    <% companies.forEach(function(company) { %>
+                                        <option value="<%= company._id %>" <%= (filters.company === company._id.toString() ) ? "selected" : "" %> ><%= company.companyName %></option>
+                                    <% }) %>
+                                <% } %>
+                            </select>
+                        </div>
+        
+                        <!-- Disability Accepted -->
+                        <div class="w-52">
+                            <label for="disabilityAccepted" class="block text-sm font-medium text-gray-700">Disability Accepted</label>
+                            <select id="disabilityAccepted" name="disabilityAccepted" class="w-full p-2 text-sm font-semibold border border-gray-300 rounded-md" aria-label="Select Disability Accepted" title="Select Disability Accepted">
+                                <option value="">All Disabilities</option>
+                                <option value="Visual Impairment" <%= (filters.disabilityAccepted === "Visual Impairment") ? "selected" : "" %>>Visual Impairment</option>
+                                <option value="Hearing Impairment" <%= (filters.disabilityAccepted === "Hearing Impairment") ? "selected" : "" %>>Hearing Impairment</option>
+                                <option value="Cognitive Impairment" <%= (filters.disabilityAccepted === "Cognitive Impairment") ? "selected" : "" %>>Cognitive Impairment</option>
+                                <option value="Physical Disability" <%= (filters.disabilityAccepted === "Physical Disability") ? "selected" : "" %>>Physical Disability</option>
+                            </select>
+                        </div>
+        
+                        <!-- Accessibility Features -->
+                        <div class="w-52">
+                            <label for="accessibilityFeatures" class="block text-sm font-medium text-gray-700">Accessibility Features</label>
+                            <select id="accessibilityFeatures" name="accessibilityFeatures" class="w-full p-2 text-sm font-semibold border border-gray-300 rounded-md" aria-label="Select Accessibility Features" title="Select Accessibility Features">
+                                <option value="">All Features</option>
+                                <option value="Wheelchair Access" <%= (filters.accessibilityFeatures === "Wheelchair Access") ? "selected" : "" %>>Wheelchair Access</option>
+                                <option value="Braille Signage" <%= (filters.accessibilityFeatures === "Braille Signage") ? "selected" : "" %>>Braille Signage</option>
+                                <option value="Elevator Access" <%= (filters.accessibilityFeatures === "Elevator Access") ? "selected" : "" %>>Elevator Access</option>
+                                <option value="Ramp Access" <%= (filters.accessibilityFeatures === "Ramp Access") ? "selected" : "" %>>Ramp Access</option>
+                                <option value="Adjustable Desks" <%= (filters.accessibilityFeatures === "Adjustable Desks") ? "selected" : "" %>>Adjustable Desks</option>
+                                <option value="Accessible Restrooms" <%= (filters.accessibilityFeatures === "Accessible Restrooms") ? "selected" : "" %>>Accessible Restrooms</option>
+                                <option value="Accessible Parking" <%= (filters.accessibilityFeatures === "Accessible Parking") ? "selected" : "" %>>Accessible Parking</option>
+                            </select>
+                        </div>
+        
+                        <!-- Skills -->
+                        <div class="w-52">
+                            <label for="skillsRequired" class="block text-sm font-medium text-gray-700">Skills</label>
+                            <select id="skillsRequired" name="skillsRequired" class="w-full p-2 text-sm font-semibold border border-gray-300 rounded-md" aria-label="Select Skills Required" title="Select Skills Required">
+                                <option value="">Select Skills</option>
+                                <% if (skill && skill.length > 0) { %>
+                                    <% skill.forEach(function(skillItem) { %>
+                                        <option value="<%= skillItem._id %>" <%= (filters.skillsRequired === skillItem._id.toString() ) ? "selected" : "" %>><%= skillItem.name %></option>
+                                    <% }); %>
+                                <% } else { %>
+                                    <option value="">No skills available</option>
+                                <% } %>
+                            </select>
+                        </div>
+        
+                        <!-- Job Status -->
+                        <div class="w-52">
+                            <label for="jobStatus" class="block text-sm font-medium text-gray-700">Job Status</label>
+                            <select id="jobStatus" name="jobStatus" class="w-full p-2 text-sm font-semibold border border-gray-300 rounded-md" aria-label="Select Job Status" title="Select Job Status">
+                                <option value="">All</option>
+                                <option value="Open" <%= (filters.jobStatus === "Open") ? "selected" : "" %>>Open</option>
+                            </select>
+                        </div>
+                        
+                        
+                        <div class="w-36 mt-3">
+                            <button type="submit" id="applyBtn" class="bg-indigo-600 text-white py-2 px-4 rounded-lg text-lg font-semibold transition duration-300 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-green-300 w-full" aria-label="Apply Filter" title="Apply selected filters">
+                                Apply Filter
+                            </button>
+                        </div>
+                        <div id="clear" class="w-36 mt-3">
+                            <button type="button" onclick="clearFilters()" class="rounded-lg text-lg font-semibold bg-gray-500 text-white px-4 py-2 hover:bg-gray-600 transition duration-200" aria-label="Clear Filters" title="Clear all filters">
+                                <i class="fas fa-times" aria-hidden="true"></i> Clear Filter
+                            </button>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- Search Results -->
+        <div id="results" class="space-y-4" role="region" aria-labelledby="resultsHeading">
+            <h2 id="resultsHeading" class="sr-only">Search Results</h2>
+            <% if (jobs.length > 0) { %>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <% jobs.forEach(function(job) { %>
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out" role="article" aria-labelledby="jobTitle-<%= job._id %>">
+                            <div class="flex justify-between items-center">
+                                <h2 id="jobTitle-<%= job._id %>" class="text-xl font-semibold text-gray-800 mb-2" title="Job Title: <%= job.title %>"><%= job.title %></h2>
+                                <a href="/jobs/showjob/<%= job._id %>" class="text-indigo-600 text-sm font-semibold" aria-label="View job details" title="View job details">View Details</a>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-2" title="Company: <%= job.postedBy.companyName %> | Location: <%= job.location %>"><a href="/users/employer/<%=job.postedBy._id%>"><%= job.postedBy.companyName %></a> | <%= job.location %></p>        
+                            <!-- Salary Range -->
+                            <p class="text-lg font-semibold text-green-700" title="Salary Range: <%= job.salaryRange ? job.salaryRange.min : 'Not specified' %> - <%= job.salaryRange ? job.salaryRange.max : 'Not specified' %>">
+                                Salary: 
+                                <%= job.salaryRange ? job.salaryRange.min : 'Not specified' %> - 
+                                <%= job.salaryRange ? job.salaryRange.max : 'Not specified' %>
+                            </p>
+        
+                            <!-- Accessibility and Disability Accepted -->
+                            <div class="mt-4">
+                                <% if (job.disabilityAccepted && job.disabilityAccepted.length > 0) { %>
+                                    <p class="text-gray-600 text-sm" title="Disabilities Accepted: <%= job.disabilityAccepted.join(", ") %>">
+                                        Disabilities Accepted: <%= job.disabilityAccepted.join(", ") %>
+                                    </p>
+                                <% } %>
+        
+                                <% if (job.accessibilityFeatures && job.accessibilityFeatures.length > 0) { %>
+                                    <p class="text-gray-600 text-sm" title="Accessibility Features: <%= job.accessibilityFeatures.join(", ") %>">
+                                        Accessibility Features: <%= job.accessibilityFeatures.join(", ") %>
+                                    </p>
+                                <% } %>
+                            </div>
+
+                             <!-- Skills Required -->
+                            <div class="mt-4">
+                                <p class="text-gray-600 text-sm font-semibold">Skills Required:</p>
+                                <% if (job.skillsRequired && job.skillsRequired.length > 0) { %>
+                                    <ul class="list-disc pl-5 text-gray-600 text-sm">
+                                        <% job.skillsRequired.forEach(function(skill) { %>
+                                            <li title="Skill: <%= skill.name %>"><%= skill.name %></li>
+                                        <% }) %>
+                                    </ul>
+                                <% } else { %>
+                                    <p class="text-gray-600 text-sm">No specific skills required.</p>
+                                <% } %>
+                            </div>
+        
+                            <!-- Job Status -->
+                            <div class="mt-4">
+                                <span class="inline-block py-1 px-3 text-xs font-semibold text-white rounded-full 
+                                    <%= job.status === 'Open' ? 'bg-green-700' : 'bg-gray-500' %>" title="Job Status: <%= job.status %>">
+                                    <%= job.status %>
+                                </span>
+                            </div>
+                            
+                            <% if (job.status === 'Closed') { %>
+                                <!-- Disabled Apply Job Button -->
+                                <a class="mt-4 w-40 block bg-gray-500 text-white px-6 py-2 rounded cursor-not-allowed text-lg font-medium" aria-label="Job closed, cannot apply" title="Job closed, cannot apply">
+                                    <i class="fas fa-paper-plane" aria-hidden="true"></i> Apply Job
+                                </a>
+                            <% } else if (appliedJob.some(id => id.toString() === job._id.toString())){%>
+                                <!-- Applied Job Button -->
+                                <a class="inline-block mr-2 mt-4 w-40 block bg-gray-500 text-white px-6 py-2 rounded cursor-not-allowed text-lg font-medium" aria-label="You have already applied for this job" title="You have already applied for this job">
+                                    <i class="fas fa-paper-plane" aria-hidden="true"></i> Apply Job
+                                </a>
+                                <span class="mt-4 py-2 text-sm text-gray-500 inline-block mb-6" title="You have already applied for this job.">You have already applied for this job.</span>
+                            <% } else { %>
+                                <!-- Active Apply Job Button -->
+                                <a href="/applications/apply-job?jobId=<%= job._id %>" class="mt-4 w-40 block bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 text-lg font-medium" aria-label="Apply for <%= job.title %>" title="Apply for <%= job.title %>">
+                                    <i class="fas fa-paper-plane" aria-hidden="true"></i> Apply Job
+                                </a>
+                            <% } %>
+                            
+                            <br>
+                            <!-- Save Job Form -->
+                            <a href="/users/save-job?jobId=<%= job._id %>" class="text-lg font-medium" aria-label="Save or unsave <%= job.title %>" title="Save or unsave <%= job.title %>">
+                                <i class="fas fa-bookmark <%= user.savedJobs.includes(job._id) ? 'text-indigo-600' : 'text-gray-400' %>" aria-hidden="true"></i>
+                                <span class="ml-2 <%= user.savedJobs.includes(job._id) ? 'text-indigo-600' : 'text-gray-600' %>">
+                                    <%= user.savedJobs.includes(job._id) ? 'Unsave Job' : 'Save Job' %>
+                                </span>
+                            </a>
+                        </div>
+                    <% }) %>
+                </div>
+                <div class="pagination">
+                    <% if (currentPage > 1) { %>
+                        <a href="?<%= new URLSearchParams({ ...filters, page: currentPage - 1 }).toString() %>">&laquo; Previous</a>
+                    <% } %>
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <a href="?<%= new URLSearchParams({ ...filters, page: i }).toString() %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+                    <% } %>
+                    <% if (currentPage < totalPages) { %>
+                        <a href="?<%= new URLSearchParams({ ...filters, page: currentPage + 1 }).toString() %>">Next &raquo;</a>
+                    <% } %>
+                </div>
+            <% } else { %>
+                <p class="text-center text-lg text-gray-500" title="No jobs found matching your criteria.">No jobs found matching your criteria.</p>
+            <% } %>
+        </div>
+    </div>
+
+    <script src="/js/searchBar.js"></script>
+    <script src="/js/location.js"></script>
+    <script src="/js/salary.js"></script>
+    <script src="/js/toggleDropdown.js"></script>
+
+</body>
+</html>

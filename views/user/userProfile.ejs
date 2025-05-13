@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.2/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <nav class="w-full bg-indigo-700 text-white p-3 px-16 border-b-2" aria-label="Main navigation">
+        <div class="flex flex-wrap items-center justify-between">
+            <a href="/" class="pl-5 text-2xl font-semibold" aria-label="Go to homepage">Aarambh</a>            
+            <div class="flex flex-row justify-center items-center space-x-6">
+                <div>
+                    <a href="/notifications" class="text-white hover:text-indigo-800" aria-label="Notifications">
+                        <i class="fas fa-bell text-white hover:text-gray-200 text-2xl" aria-hidden="true"></i>
+                    </a>
+                </div>
+                <div class="relative">
+                    <button 
+                        id="dropdownButton" 
+                        class="w-30 h-12 border-4 border-indigo-100 hover:border-indigo-200 rounded-3xl flex items-center space-x-2 bg-indigo-100 pr-4 py-2 hover:bg-indigo-200 focus:outline-none"
+                        aria-haspopup="true" 
+                        aria-expanded="false" 
+                        onclick="toggleDropdown(event)"
+                        aria-label="User Profile Dropdown">
+                        <img src="<%= user.profilePhoto? 'data:profilePhoto/png;base64,'+user.profilePhoto.toString('base64') : '/images/default.png'%>" alt="<%= user.profilePhoto ? 'User profile photo' : 'Default Profile Photo' %>" class="w-11 h-11 rounded-full border-2 border-indigo-800 object-cover mr-4" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="#6366f1" class="w-5 h-5" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Navbar Links -->
+                    <ul id="dropdownMenu" 
+                        class="hidden absolute right-0 mt-2 w-48 bg-white text-indigo-800 rounded-md shadow-lg z-10" 
+                        role="menu" aria-labelledby="dropdownButton">
+                        <h1 class="block px-4 py-2 text-xl font-semibold" id="user-name"><%= user.name %></h1>
+                        <p class="block px-4 pb-2 text-indigo-600 break-words" id="user-email"><%= user.email %></p>
+                        <li role="none"><a href="/users/dashboard" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Profile"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li role="none"><a href="/searchs/search-bar" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Jobs"><i class="fas fa-briefcase"></i> Jobs</a></li>
+                        <li role="none"><a href="/notifications" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Notifications"><i class="fas fa-bell"></i> Notifications</a></li>
+                        <li role="none"><a href="/settings" class="block px-4 py-2 text-indigo-600 hover:text-indigo-800" role="menuitem" aria-label="Settings"><i class="fas fa-cogs"></i> Settings</a></li>
+                        <li role="none"><a href="/auths/logout" class="block px-4 py-2 text-red-500 hover:text-red-600" role="menuitem" aria-label="Logout"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="min-h-screen flex flex-col items-center pt-10 px-4" role="main">
+
+        <!-- Profile Section -->
+        <div class="w-full max-w-5xl bg-white shadow-lg rounded-xl p-8">
+
+            <!-- Header Section with Profile Info -->
+            <div class="flex items-center justify-between">
+                <!-- Profile Image and User Info -->
+                <div class="flex items-center space-x-6">
+                    <div class="relative w-24 h-24">
+                        <img src="<%= user.profilePhoto? 'data:profilePhoto/png;base64,'+user.profilePhoto.toString('base64') : '/images/default.png'%>" alt="<%= user.profilePhoto ? 'User profile photo' : 'Default Profile Photo' %>" class="w-24 h-24 rounded-full border-4 border-indigo-500 shadow-lg object-cover" aria-hidden="true">
+                        <form action="/users/upload-profile-pic" method="POST" enctype="multipart/form-data"
+                        class="absolute bottom-0 right-0">
+                        <label class="bg-indigo-600 text-white rounded-full px-3 py-2 hover:bg-indigo-700 cursor-pointer">
+                            <i class="fas fa-camera"></i>
+                            <input type="file" name="profilePhoto" accept="image/*" class="hidden" 
+                                onchange="this.form.submit()">
+                        </label>
+                    </form>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-semibold text-gray-800"><%= user.name %></h1>
+                        <p class="text-gray-600"><%= user.email %></p>
+                        <p class="text-gray-600"><strong>Phone:</strong> <%= user.phone %></p> <!-- Added Phone -->
+                    </div>
+                    
+                </div>
+                <!-- Edit Button -->
+                <a href="/users/UpdateProfile" class="text-indigo-600 hover:text-indigo-800 text-lg font-medium flex items-center space-x-2" aria-label="Edit Profile">
+                    <i class="fas fa-edit" aria-hidden="true"></i>
+                    <span>Edit Profile</span>
+                </a>
+            </div>
+
+            <!-- Profile Details Section -->
+            <div class="mt-8 space-y-8">
+                <!-- Disability and Accessibility Features -->
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm" role="region" aria-labelledby="disability-accessibility">
+                    <h2 id="disability-accessibility" class="text-2xl font-semibold text-gray-700">Disability and Accessibility Features</h2>
+                    <p class="text-gray-600 mt-2"><strong>Disability:</strong>
+                        <%= user.disability.length > 0 ? user.disability.join(', ') : 'No Disability listed' %>
+                    </p>
+                    <p class="text-gray-600 mt-2"><strong>Accessibility Features:</strong>
+                        <%= user.accessibilityFeatures.length > 0 ? user.accessibilityFeatures.join(', ') : 'No Accessibility Features listed' %>
+                    </p>
+                </div>
+
+                <!-- Skills Section -->
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm" role="region" aria-labelledby="skills-section">
+                    <h2 id="skills-section" class="text-2xl font-semibold text-gray-700">Skills</h2>
+                    <ul class="mt-2 space-y-2">
+                        <% if (user.skills && user.skills.length > 0) { %>
+                            <% user.skills.forEach(function(skill) { %>
+                                <li class="text-gray-600">• <%= skill.name %></li>
+                            <% }); %>
+                        <% } else { %>
+                            <li class="text-gray-600">No skills listed</li>
+                        <% } %>
+                    </ul>
+                </div>
+
+                <!-- Job Preferences Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 p-6 rounded-lg shadow-sm" role="region" aria-labelledby="job-preferences">
+                        <h2 id="job-preferences" class="text-2xl font-semibold text-gray-700">Preferred Job Type</h2>
+                        <p class="text-gray-600"><%= user.preferredJobType%></p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg shadow-sm" role="region" aria-labelledby="preferred-location">
+                        <h2 id="preferred-location" class="text-2xl font-semibold text-gray-700">Preferred Location</h2>
+                        <p class="text-gray-600"><%= user.preferredLocation%></p>
+                    </div>
+                </div>
+
+                <!-- Salary Expectation Section -->
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm" role="region" aria-labelledby="salary-expectation">
+                    <h2 id="salary-expectation" class="text-2xl font-semibold text-gray-700">Salary Expectation</h2>
+                    <p class="text-gray-600">Min: $<%= user.salaryExpectation.min%> | Max: $ <%= user.salaryExpectation.max%></p>
+                </div>
+
+                <!-- Saved Jobs Section -->
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm" role="region" aria-labelledby="saved-jobs">
+                    <h2 id="saved-jobs" class="text-2xl font-semibold text-gray-700">Saved Jobs</h2>
+                    <ul class="mt-4 space-y-4">
+                        <li class="flex justify-between items-center p-4 border-b hover:bg-indigo-50 rounded-lg">
+                            <div class="flex items-center space-x-2">
+                                <h3 class="font-medium text-gray-800">Software Engineer</h3>
+                                <span class="text-gray-500 ml-2">| TechCorp</span>
+                            </div>
+                            <div>
+                                <a href="#" class="text-indigo-600 hover:text-indigo-800 flex items-center space-x-2" aria-label="View Software Engineer job details">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                    <span>View Job</span>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="flex justify-between items-center p-4 border-b hover:bg-indigo-50 rounded-lg">
+                            <div class="flex items-center space-x-2">
+                                <h3 class="font-medium text-gray-800">Frontend Developer</h3>
+                                <span class="text-gray-500 ml-2">| Web Solutions</span>
+                            </div>
+                            <div>
+                                <a href="#" class="text-indigo-600 hover:text-indigo-800 flex items-center space-x-2" aria-label="View Frontend Developer job details">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                    <span>View Job</span>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-5 w-full bg-indigo-800 text-white text-center py-4 mt-1" role="contentinfo">
+        <p>&copy; 2025 Job Seekers Platform | All Rights Reserved</p>
+    </footer>
+    <script src="/js/toggleDropdown.js"></script>
+
+</body>
+
+</html>

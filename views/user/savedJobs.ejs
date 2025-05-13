@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Jobs</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-indigo-100">
+
+    <div class="min-h-screen flex flex-col">
+        <!-- Navbar -->
+        <nav class="bg-indigo-800 text-white p-4">
+            <div class="container mx-auto flex justify-between items-center px-4">
+                <a href="/" class="text-2xl font-semibold" aria-label="Go to homepage">Aarambh</a>
+                <ul class="flex space-x-6 pr-5 text-sm sm:text-base flex-wrap">
+                    <li><a href="/users/dashboard" class="text-gray-300 hover:text-white" aria-label="Go to Dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="/searchs/search-bar" class="text-gray-300 hover:text-white" aria-label="View available jobs"><i class="fas fa-briefcase"></i> Jobs</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto py-10 px-10 flex-grow">
+
+            <!-- Heading -->
+            <h1 class="text-4xl font-semibold text-center text-gray-900 mb-8" id="main-heading">Your Saved Jobs</h1>
+
+            <% if (user.savedJobs && user.savedJobs.length > 0) { %>
+                <!-- Grid of Saved Jobs -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <% user.savedJobs.forEach(job => { %>
+                        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105" role="region" aria-labelledby="job-<%= job._id %>">
+                            <!-- Job Title -->
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4" id="job-<%= job._id %>"><%= job.title %></h2>
+                            
+                            <!-- Job Description -->
+                            <p class="text-gray-600 mb-4 line-clamp-3"><%= job.description %></p>
+
+                            <!-- Job Location and Date -->
+                            <div class="text-gray-500 mb-4">
+                                <p><strong>Location:</strong> <%= job.location %></p>
+                                <p><strong>Posted on:</strong> <%= job.postedDate %></p>
+                            </div>
+
+                            <!-- Apply Now Link -->
+                            <a href="/applications/apply-job?jobId=<%= job._id %>" class="inline-block bg-indigo-600 text-white py-2 px-6 rounded-md text-lg font-medium hover:bg-indigo-700 transition duration-300 mb-2 mt-2" aria-label="Apply for <%= job.title %> job"><i class="fas fa-paper-plane"></i> Apply Now</a>
+
+                            <!-- Save/Unsave Button -->
+                            <a href="/users/save-job?jobId=<%= job._id %>" class="flex items-center mt-4 text-gray-600 hover:text-indigo-600 transition-colors duration-200" aria-label="<%= user.savedJobs.includes(job._id) ? 'Unsave' : 'Save' %> job <%= job.title %>">
+                                <i class="fas fa-bookmark text-indigo-600 text-2xl mr-2"></i>
+                                <span class="text-indigo-600 font-medium">
+                                    <%= user.savedJobs.includes(job._id) ? 'Unsave Job' : 'Save Job' %>
+                                </span>
+                            </a>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <p class="text-center text-gray-600 text-lg">You have not saved any jobs yet.</p>
+            <% } %>
+
+            
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-indigo-800 text-white text-center py-4 mt-8">
+            <p>&copy; 2025 Job Seekers Platform | All Rights Reserved</p>
+        </footer>
+    </div>
+
+</body>
+</html>

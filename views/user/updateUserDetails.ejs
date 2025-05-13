@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update User Details</title>
+    <link rel="stylesheet" href="/css/errorhandling.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+</head>
+
+<body class="bg-gray-50 flex justify-center items-center flex-col min-h-screen">
+    <!-- Error Messages -->
+    <% if (error.length > 0) { %>
+        <div class="fixed top-10 right-0 w-1/3 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-lg shadow-lg slide-in flex justify-between items-center">
+            <span><%= error %></span>
+            <button 
+                class="text-red-700 text-2xl font-bold hover:text-red-900 focus:outline-none ml-4" 
+                onclick="this.parentElement.remove();"
+            >
+                &times;
+            </button>
+        </div>
+    <% } %>
+
+    <!-- Success Messages -->
+    <% if (success.length > 0) { %>
+        <div class="fixed top-10 right-0 w-1/3 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded-lg shadow-lg slide-in flex justify-between items-center">
+            <span><%= success %></span>
+            <button 
+                class="text-green-700 text-2xl font-bold hover:text-green-900 focus:outline-none ml-4" 
+                onclick="this.parentElement.remove();"
+            >
+                &times;
+            </button>
+        </div>
+    <% } %>
+    <div class="mt-10 w-full  flex flex-row justify-start items-center">
+        <a href="/users/profile" class="py-2 px-5 ml-20 rounded-lg bg-red-500">Back</a>
+    </div>
+    
+
+    <!-- Registration Form -->
+    <div class="w-1/2 bg-white p-12 pt-8 mt-5 mb-5 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-6 text-center">User Registration</h2>
+        
+        <form action="/users/UpdateProfile" method="POST">
+            <!-- Name -->
+            <div class="mb-4">
+                <label for="name" class="block text-sm font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
+                <input type="text" id="name" name="name" value="<%= user.name %>" class="w-full px-4 py-2 mt-2 border bg-gray-100 border-gray-300 rounded-md focus:outline-none" readonly required>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
+                <input type="email" id="email" name="email" value="<%= user.email %>" class="w-full px-4 py-2 mt-2 border bg-gray-100 border-gray-300 rounded-md focus:outline-none" readonly required>
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-4">
+                <label for="phone" class="block text-sm font-medium text-gray-700">Phone <span class="text-red-500">*</span></label>
+                <input type="text" id="phone" name="phone" value="<%= user.phone %>" class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" required>
+            </div>
+
+
+            <!-- Disability  -->
+            <div class="mb-4">
+                <label for="disability[]" class="block text-sm font-medium text-gray-700">Disability <span class="text-red-500">*</span></label>
+                <select id="disability" name="disability[]" class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" multiple >
+                    <option value="Visual Impairment" <%= user.disability.includes('Visual Impairment') ? 'selected' : '' %>>Visual Impairment</option>
+                    <option value="Hearing Impairment" <%= user.disability.includes('Hearing Impairment') ? 'selected' : '' %>>Hearing Impairment</option>
+                    <option value="Cognitive Impairment" <%= user.disability.includes('Cognitive Impairment') ? 'selected' : '' %>>Cognitive Impairment</option>
+                    <option value="Physical Disability" <%= user.disability.includes('Physical Disability') ? 'selected' : '' %>>Physical Disability</option>
+                </select>
+            </div>
+
+
+            <!-- Accessibility Features (Multiple Choice) -->
+            <div class="mb-4">
+                <label for="accessibilityFeatures[]" class="block text-sm font-medium text-gray-700">Accessibility Features <span class="text-red-500">*</span></label>
+                <select id="accessibilityFeatures" name="accessibilityFeatures[]" class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" multiple >
+                    <option value="Wheelchair Access" <%= user.accessibilityFeatures.includes('Wheelchair Access') ? 'selected' : '' %>>Wheelchair Access</option>
+                    <option value="Braille Signage" <%= user.accessibilityFeatures.includes('Braille Signage') ? 'selected' : '' %>>Braille Signage</option>
+                    <option value="Elevator Access" <%= user.accessibilityFeatures.includes('Elevator Access') ? 'selected' : '' %>>Elevator Access</option>
+                    <option value="Ramp Access" <%= user.accessibilityFeatures.includes('Ramp Access') ? 'selected' : '' %>>Ramp Access</option>
+                    <option value="Adjustable Desks" <%= user.accessibilityFeatures.includes('Adjustable Desks') ? 'selected' : '' %>>Adjustable Desks</option>
+                    <option value="Accessible Restrooms" <%= user.accessibilityFeatures.includes('Accessible Restrooms') ? 'selected' : '' %>>Accessible Restrooms</option>
+                    <option value="Accessible Parking" <%= user.accessibilityFeatures.includes('Accessible Parking') ? 'selected' : '' %>>Accessible Parking</option>
+                </select>
+            </div>
+
+
+            <!-- Skills (Dropdown) -->
+            <div class="mb-4">
+                <label for="skills[]" class="block text-sm font-medium text-gray-700">Skills <span class="text-red-500">*</span></label>
+                <select id="skills" name="skills[]" class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" multiple >
+                    <% if (skills.length > 0) { %>
+                        <% skills.forEach(skill => { %>
+                            <option value="<%= skill._id %>" 
+                                <%= user.skills.includes(skill._id.toString()) ? 'selected' : '' %>>
+                                <%= skill.name %>
+                            </option>
+                        <% }) %>
+                    <% } else { %>
+                        <option value="" disabled>No skills available</option>
+                    <% } %>
+                </select>
+            </div>
+
+            <!-- Preferred Job Type (Dropdown) -->
+            <div class="mb-4">
+                <label for="preferredJobType" class="block text-sm font-medium text-gray-700">
+                    Preferred Job Type <span class="text-red-500">*</span>
+                </label>
+                <select id="preferredJobType" name="preferredJobType" 
+                    class="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <option value="Remote" <%= user.preferredJobType === 'Remote' ? 'selected' : '' %>>Remote</option>
+                    <option value="Full-time" <%= user.preferredJobType === 'Full-time' ? 'selected' : '' %>>Full-time</option>
+                    <option value="Part-time" <%= user.preferredJobType === 'Part-time' ? 'selected' : '' %>>Part-time</option>
+                    <option value="Contract" <%= user.preferredJobType === 'Contract' ? 'selected' : '' %>>Contract</option>
+                </select>
+            </div>
+            
+
+            <!-- Preferred Location -->
+            <div class="mb-4">
+                <label for="preferredLocation" class="block text-sm font-medium text-gray-700">Preferred Location <span class="text-red-500">*</span></label>
+                <select id="citiesList" name="preferredLocation" data-filter="<%= user.preferredLocation %>" class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                    <option value="" disabled selected>Select your Preferred Location</option>
+
+                </select>
+            </div>
+            
+
+            <!-- Salary Expectation -->
+            <div class="mb-4">
+                <label for="salaryExpectation" class="block text-sm font-medium text-gray-700">Salary Expectation (min - max) <span class="text-red-500">*</span></label>
+                <div class="flex space-x-2">
+                    <input type="number" name="salaryExpectation[min]" placeholder="Min" value="<%= user.salaryExpectation.min%>" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" required min="0">
+                    <input type="number" name="salaryExpectation[max]" placeholder="Max" value="<%= user.salaryExpectation.max%>" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" required min="0">
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="mb-4 text-center">
+                <button type="submit" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
+                    Update
+                </button>
+            </div>
+        </form>
+        
+    </div>
+    <script src="/js/select.js"></script>
+    <script src="/js/location.js"></script>
+</body>
+</html>
